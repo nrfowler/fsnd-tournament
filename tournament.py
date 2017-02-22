@@ -52,6 +52,7 @@ def registerPlayer(name):
     """
     conn=connect()
     cursor = conn.cursor()
+    name = name.replace("'","''")
     cursor.execute("insert into players (name) values ('"+name+"')")
     conn.commit()
 
@@ -73,7 +74,11 @@ def playerStandings():
     """
     conn=connect()
     cursor = conn.cursor()
-    cursor.execute("select id, name, wins, matches from players ")
+    cursor.execute("select id, name, (select count(*) as wins from matches"
+    "where matches.winner = players.id),  (select count(*) as matches "
+    "from matches where  "
+    "(matches.winner = players.id or matches.loser = players.id )) "
+    "from players order by wins desc; ")
     results=cursor.fetchall()
     conn.close()
     return results
@@ -88,7 +93,8 @@ def reportMatch(winner, loser):
     """
     conn=connect()
     cursor = conn.cursor()
-    cursor.execute("insert into matches (winner, loser) values ('"+winner+"','"+loser+"')")
+    cursor.execute("insert into matches (winner, loser) values ('"+
+    str(winner)+"','"+str(loser)+"')")
     conn.commit()
 
     conn.close()
@@ -109,3 +115,10 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    standings = playerStandings()
+    pairings = []
+    for i in range(0,len(standings)-1, 2):
+        tup = (standings[i][0], standings[i][1],
+        standings[i+1][0], standings[i+1][1])
+        pairings.append(tup)
+    return pairings
