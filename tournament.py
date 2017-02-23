@@ -13,7 +13,7 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    conn=connect()
+    conn = connect()
     cursor = conn.cursor()
     cursor.execute("delete from matches;")
     conn.commit()
@@ -22,24 +22,21 @@ def deleteMatches():
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    conn=connect()
+    conn = connect()
     cursor = conn.cursor()
     cursor.execute("delete from players;")
     conn.commit()
     conn.close()
 
 
-
 def countPlayers():
     """Returns the number of players currently registered."""
-    conn=connect()
+    conn = connect()
     cursor = conn.cursor()
     cursor.execute("select count(*) from players")
     results=cursor.fetchone()
     conn.close()
     return results[0]
-
-
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
@@ -50,19 +47,17 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    conn=connect()
+    conn = connect()
     cursor = conn.cursor()
-    name = name.replace("'","''")
-    cursor.execute("insert into players (name) values ('"+name+"')")
+    name = name.replace("'" , "''")
+    cursor.execute("insert into players (name) values (%s)",(name,))
     conn.commit()
-
     conn.close()
-
 
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
 
-    The first entry in the list should be the player in first place, or a player
+    The first entry in the list is the player in first place, or a player
     tied for first place if there is currently a tie.
 
     Returns:
@@ -72,14 +67,14 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    conn=connect()
+    conn = connect()
     cursor = conn.cursor()
     cursor.execute("select id, name, (select count(*) as wins from matches"
-    "where matches.winner = players.id),  (select count(*) as matches "
-    "from matches where  "
-    "(matches.winner = players.id or matches.loser = players.id )) "
-    "from players order by wins desc; ")
-    results=cursor.fetchall()
+        " where matches.winner = players.id),  (select count(*) as matches "
+        "from matches where  "
+        "(matches.winner = players.id or matches.loser = players.id )) "
+        "from players order by wins desc; ")
+    results = cursor.fetchall()
     conn.close()
     return results
 
@@ -91,12 +86,10 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    conn=connect()
+    conn = connect()
     cursor = conn.cursor()
-    cursor.execute("insert into matches (winner, loser) values ('"+
-    str(winner)+"','"+str(loser)+"')")
+    cursor.execute("insert into matches (winner, loser) values (%s, %s)", (winner, loser))
     conn.commit()
-
     conn.close()
 
 
@@ -117,8 +110,8 @@ def swissPairings():
     """
     standings = playerStandings()
     pairings = []
-    for i in range(0,len(standings)-1, 2):
+    for i in range(0, len(standings) - 1, 2):
         tup = (standings[i][0], standings[i][1],
-        standings[i+1][0], standings[i+1][1])
+            standings[i + 1][0], standings[i + 1][1])
         pairings.append(tup)
     return pairings

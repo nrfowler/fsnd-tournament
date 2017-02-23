@@ -1,11 +1,19 @@
 # fsnd-tournament
 
 
-Tournament Project for Full Stack Nanodegree
+##Tournament Project for Full Stack Nanodegree
 
-Instructions:
+###Instructions
 
-/c tournament
+To set up the database:
+$ psql -f tournament.sql
+To connect to the database:
+$ /c tournament
+To run the tests:
+$python tournament_test.py
 
-python tournament_test.py
-https://docs.google.com/document/d/16IgOm4XprTaKxAa8w02y028oBECOoB1EI1ReddADEeY/pub?embedded=true
+###Dependencies
+
+PostgreSQL
+python
+psycopg2

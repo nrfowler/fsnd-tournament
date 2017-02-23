@@ -6,14 +6,13 @@
 -- You can write comments in this file by starting them with two dashes, like
 -- these lines here.
 drop database IF EXISTS  tournament;
-drop table matches;
-drop table players;
 create database tournament;
 create table players(
   id serial primary key,
   name varchar(40) NOT NULL
 );
 create table matches(
+  id serial primary key,
   winner integer references players(id) NOT NULL,
   loser integer references players(id) NOT NULL
 );
